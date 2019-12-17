@@ -3,6 +3,7 @@ package main;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -26,7 +27,7 @@ public class FileCreator {
         File file = new File("Serie_storiche_indicizzate.txt");
         try {
             file.createNewFile();
-            PrintWriter pw = new PrintWriter(file, "UTF-8");
+            PrintWriter pw = new PrintWriter(file, StandardCharsets.UTF_8);
 
             // Header
             pw.println(PLAYER_NAME_COL_NAME + COL_SEPARATOR
@@ -40,7 +41,7 @@ public class FileCreator {
             this.playerList.stream()
                     .peek(Player::fillMissingSerieValues)
                     .forEach(p ->
-                IntStream.range(1,39).forEach(day ->
+                IntStream.range(1,Season.ALL_SEASONS_LENGTH+1).forEach(day ->
                     pw.println(p.getName() + COL_SEPARATOR
                              + p.getTeam() + COL_SEPARATOR
                              + p.getRole() + COL_SEPARATOR

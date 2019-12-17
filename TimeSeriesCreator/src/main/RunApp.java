@@ -3,6 +3,8 @@ package main;
 public class RunApp {
 
     public static void main(String [ ] args){
-        new VotePicker();
+
+        final VotePicker v = new VotePicker();
+        v.initAllPlayers();
     }
 }

@@ -98,7 +98,7 @@ public class Player {
     public void fillMissingSerieValues() {
         final Set<Integer> playedMatch = this.sortedVoteForMatchdayForFile.stream().map(Pair::getKey).collect(Collectors.toSet());
 
-        IntStream.range(1, 39).boxed().forEach(i -> {
+        IntStream.range(1, Season.ALL_SEASONS_LENGTH+1).boxed().forEach(i -> {
             if (!playedMatch.contains(i)) {
                 this.sortedVoteForMatchdayForFile.add(new Pair<>(i, DEFAULT_VOTE));
             }
@@ -107,7 +107,7 @@ public class Player {
     }
 
     public String toString(){
-        SortedSet<Integer> keys = new TreeSet< >(this.voteSeries.keySet()); //sort keys
+        SortedSet<Integer> keys = new TreeSet<>(this.voteSeries.keySet()); //sort keys
         return this.name + ": " + this.role + "," + this.team + "," +
                 keys.stream().map(k -> new Pair<>(k, voteSeries.get(k))).collect(Collectors.toList());
     }
