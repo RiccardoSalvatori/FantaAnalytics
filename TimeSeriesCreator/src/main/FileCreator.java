@@ -18,39 +18,59 @@ public class FileCreator {
 
     private final List<Player> playerList;
 
-    public FileCreator(final List<Player> playerList){
+    public FileCreator(final List<Player> playerList) {
         this.playerList = playerList;
-        this.indexedVoteSeries();
+        //this.saveIndexedVoteSeries();
     }
 
-    private void indexedVoteSeries() {
-        File file = new File("Serie_storiche_indicizzate.txt");
-        try {
-            file.createNewFile();
-            PrintWriter pw = new PrintWriter(file, StandardCharsets.UTF_8);
+    private void printCsvHeaders(final PrintWriter pw) {
+        pw.print(PLAYER_NAME_COL_NAME + COL_SEPARATOR
+                + PLAYER_TEAM_COL_NAME + COL_SEPARATOR
+                + PLAYER_ROLE_COL_NAME + COL_SEPARATOR);
+        IntStream.range(1, Season.ALL_SEASONS_LENGTH + 1)
+                .forEach(dayIndex -> pw.print(dayIndex + COL_SEPARATOR));
+        pw.println();
+    }
 
+
+    public void saveIndexedVoteSeries() {
+        File file = new File("serie_storiche_voti.csv");
+        try (PrintWriter pw = new PrintWriter(file, StandardCharsets.UTF_8)) {
+            file.createNewFile();
             // Header
-            pw.println(PLAYER_NAME_COL_NAME + COL_SEPARATOR
-                     + PLAYER_TEAM_COL_NAME + COL_SEPARATOR
-                     + PLAYER_ROLE_COL_NAME + COL_SEPARATOR
-                     + MATCHDAY_COL_NAME + COL_SEPARATOR
-                     + VOTE_COL_NAME
-            );
+            this.printCsvHeaders(pw);
 
             // Body
             this.playerList.stream()
-                    .peek(Player::fillMissingSerieValues)
-                    .forEach(p ->
-                IntStream.range(1,Season.ALL_SEASONS_LENGTH+1).forEach(day ->
-                    pw.println(p.getName() + COL_SEPARATOR
-                             + p.getTeam() + COL_SEPARATOR
-                             + p.getRole() + COL_SEPARATOR
-                             + day + COL_SEPARATOR + " "
-                             + p.getSortedVoteForMatchdayForFile().get(day-1).getValue()
-                    )
-                )
-            );
-            pw.close();
+                    .peek(Player::fillMissingVotesValues)
+                    .forEach(p -> {
+                        pw.print(p.getName() + COL_SEPARATOR
+                                + p.getTeam() + COL_SEPARATOR
+                                + p.getRole() + COL_SEPARATOR);
+                        p.getVoteSeries().forEach((k, v) -> pw.print(v + COL_SEPARATOR));
+                        pw.println();
+                    });
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void saveIndexedFantaVoteSeries() {
+        File file = new File("serie_storiche_fantavoti.csv");
+        try (PrintWriter pw = new PrintWriter(file, StandardCharsets.UTF_8)) {
+            file.createNewFile();
+            this.printCsvHeaders(pw);
+            // Body
+            this.playerList.stream()
+                    .peek(Player::fillMissingFantaVotesValues)
+                    .forEach(p -> {
+                        pw.print(p.getName() + COL_SEPARATOR
+                                + p.getTeam() + COL_SEPARATOR
+                                + p.getRole() + COL_SEPARATOR);
+                        p.getFantaVoteSeries().forEach((k, v) -> pw.print(v + COL_SEPARATOR));
+                        pw.println();
+                    });
+
         } catch (IOException e) {
             e.printStackTrace();
         }

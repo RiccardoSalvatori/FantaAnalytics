@@ -6,12 +6,11 @@ import java.util.stream.IntStream;
 
 public class Player {
 
-    private static final double DEFAULT_VOTE = -10;
+    public static final double DEFAULT_VOTE = Double.NaN;
 
     private String name, team, role;
     private Map<Integer, Double> voteSeries;
     private Map<Integer, Double> fantaVoteSeries;
-    private List<Pair<Integer,Double>> sortedVoteForMatchdayForFile = new ArrayList<>();
 
     public Player(String position, String fullName, String team, int initialQuotation){
         this.formatName(fullName);
@@ -53,27 +52,6 @@ public class Player {
         this.fantaVoteSeries.put(day,fantaVote);
     }
 
-    public void takeSortedVoteForMatchday(List<Pair<Integer, Double>> svfm){
-        if(this.sortedVoteForMatchdayForFile.isEmpty()){
-            for(Pair<Integer,Double> pair : svfm){
-                if(pair.getValue() != -10.0){
-                    this.sortedVoteForMatchdayForFile.add(pair);
-                }
-            }
-        }
-        else{
-            for(Pair<Integer,Double> pair : svfm){
-                if(pair.getValue() != -10.0){
-                    this.sortedVoteForMatchdayForFile.add(new Pair<>(pair.getKey()+38, pair.getValue()));
-                }
-            }
-        }
-    }
-
-    public List<Pair<Integer,Double>> getSortedVoteForMatchdayForFile(){
-        return this.sortedVoteForMatchdayForFile;
-    }
-
     public String getName(){
         return this.name;
     }
@@ -95,15 +73,20 @@ public class Player {
         return this.fantaVoteSeries;
     }
 
-    public void fillMissingSerieValues() {
-        final Set<Integer> playedMatch = this.sortedVoteForMatchdayForFile.stream().map(Pair::getKey).collect(Collectors.toSet());
-
-        IntStream.range(1, Season.ALL_SEASONS_LENGTH+1).boxed().forEach(i -> {
-            if (!playedMatch.contains(i)) {
-                this.sortedVoteForMatchdayForFile.add(new Pair<>(i, DEFAULT_VOTE));
+    public void fillMissingVotesValues() {
+        IntStream.range(1, Season.ALL_SEASONS_LENGTH+1).forEach(index -> {
+            if(!this.voteSeries.containsKey(index)){
+                this.addVote(index, DEFAULT_VOTE);
             }
         });
-        this.sortedVoteForMatchdayForFile.sort(Comparator.comparingInt(Pair::getKey));
+    }
+
+    public void fillMissingFantaVotesValues() {
+        IntStream.range(1, Season.ALL_SEASONS_LENGTH+1).forEach(index -> {
+            if(!this.fantaVoteSeries.containsKey(index)){
+                this.addFantaVote(index, DEFAULT_VOTE);
+            }
+        });
     }
 
     public String toString(){

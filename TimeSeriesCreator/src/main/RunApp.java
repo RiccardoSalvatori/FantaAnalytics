@@ -6,5 +6,7 @@ public class RunApp {
 
         final VotePicker v = new VotePicker();
         v.initAllPlayers();
+        new FileCreator((v.getAllPlayers())).saveIndexedVoteSeries();
+        new FileCreator((v.getAllPlayers())).saveIndexedFantaVoteSeries();
     }
 }

@@ -4,9 +4,11 @@ import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import static main.Season.SEASON_LENGTH;
 
@@ -37,6 +39,14 @@ public class VotePicker {
                                 allPlayers.add(new Player(player));
                             }
                         }));
+    }
+
+    public List<Player> getAllPlayers() {
+        return Collections.unmodifiableList(this.allPlayers);
+    }
+
+    public void printPlayers() {
+        this.allPlayers.forEach(System.out::println);
     }
 
 
@@ -95,8 +105,10 @@ public class VotePicker {
                         if (!role.isEmpty()) {//empty role is for coaches
                             Player p = new Player(playerName, team, role);
                             int dayInt = Integer.parseInt(day) + season.getSeasonIndex() * SEASON_LENGTH;
-                            double vDouble = v.equals(NO_VOTE) ? -1 : Double.parseDouble(v.replace(',', '.'));
-                            double fvDouble = fv.equals(NO_VOTE) ? -1 : Double.parseDouble(fv.replace(',', '.'));
+                            double vDouble = v.equals(NO_VOTE) ? Player.DEFAULT_VOTE :
+                                    Double.parseDouble(v.replace(',', '.'));
+                            double fvDouble = fv.equals(NO_VOTE) ? Player.DEFAULT_VOTE :
+                                    Double.parseDouble(fv.replace(',', '.'));
                             Consumer<Player> updateVotes = player -> {
                                 player.addVote(dayInt, vDouble);
                                 player.addFantaVote(dayInt, fvDouble);
