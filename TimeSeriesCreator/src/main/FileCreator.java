@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 public class FileCreator {
@@ -27,9 +28,15 @@ public class FileCreator {
         pw.print(PLAYER_NAME_COL_NAME + COL_SEPARATOR
                 + PLAYER_TEAM_COL_NAME + COL_SEPARATOR
                 + PLAYER_ROLE_COL_NAME + COL_SEPARATOR);
-        IntStream.range(1, Season.ALL_SEASONS_LENGTH + 1)
-                .forEach(dayIndex -> pw.print(dayIndex + COL_SEPARATOR));
+
+        pw.print(IntStream.range(1, Season.ALL_SEASONS_LENGTH + 1)
+                .boxed()
+                .map(Object::toString)
+                .collect(Collectors.joining(COL_SEPARATOR)));
+
+
         pw.println();
+
     }
 
 
@@ -47,7 +54,12 @@ public class FileCreator {
                         pw.print(p.getName() + COL_SEPARATOR
                                 + p.getTeam() + COL_SEPARATOR
                                 + p.getRole() + COL_SEPARATOR);
-                        p.getVoteSeries().forEach((k, v) -> pw.print(v + COL_SEPARATOR));
+
+                        pw.print(p.getVoteSeries().values()
+                                .stream()
+                                .map(Object::toString)
+                                .collect(Collectors.joining(COL_SEPARATOR)));
+
                         pw.println();
                     });
         } catch (IOException e) {
@@ -67,7 +79,11 @@ public class FileCreator {
                         pw.print(p.getName() + COL_SEPARATOR
                                 + p.getTeam() + COL_SEPARATOR
                                 + p.getRole() + COL_SEPARATOR);
-                        p.getFantaVoteSeries().forEach((k, v) -> pw.print(v + COL_SEPARATOR));
+
+                        pw.print( p.getFantaVoteSeries().values()
+                                .stream()
+                                .map(Object::toString)
+                                .collect(Collectors.joining(COL_SEPARATOR)));
                         pw.println();
                     });
 
