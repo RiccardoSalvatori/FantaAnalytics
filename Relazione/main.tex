@@ -1,0 +1,68 @@
+\documentclass[12pt,a4paper,twoside,openright]{book}
+
+\usepackage[USenglish,english]{babel}
+\usepackage[utf8]{inputenc}
+
+\usepackage{style/isi_style_lt}
+
+\usepackage{amsmath,amsfonts,amssymb,amsthm}
+\usepackage{caption}
+\usepackage[usenames]{color}
+\usepackage{enumerate}
+\usepackage{fancyhdr}
+\usepackage{fancyvrb}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{indentfirst}
+\usepackage{listings}
+\usepackage{marvosym}
+\usepackage{multicol}
+\usepackage{sectsty}
+\usepackage{subcaption}
+\usepackage{tocloft}
+\usepackage[table]{xcolor}
+\usepackage{url}
+\usepackage{float}
+
+\input{style/settings.tex}
+
+\universita{Alma Mater Studiorum -- Università di Bologna}
+
+\campus{Campus di Cesena}
+
+\scuola{Scuola di Ingegneria e Architettura}
+
+\corsodilaurea{Laurea Magistrale in Ingegneria e Scienze Informatiche}
+
+\titolo{Fanta Analytics}
+
+\materia{Sistemi di Supporto alle Descisioni}
+
+\laureando{Gabriele Guerrini, \\ Salvatori Riccardo, \\ Salvatori Stefano}
+
+\annoaccademico{2019 -- 2020}
+
+\makeindex
+
+\begin{document}
+
+\frontmatter 
+
+\maketitle
+
+\tableofcontents
+
+\mainmatter
+
+\pagestyle{fancy} 
+\fancyhead[LE,RO]{\thepage}
+\fancyfoot{}
+
+\input{capitolo1.tex}
+\input{capitolo2.tex}
+\input{capitolo3.tex}
+\input{capitolo4.tex}
+	
+\backmatter	
+
+\end{document}

@@ -1,0 +1,30 @@
+\chapter {Forecast}
+
+The forecasting has been implemented in three differents ways: LSTM, SARIMA, MLP.
+\\
+The performance are compared in table \ref{table:RMSE} using RMSE value obtained on test set.
+
+\begin{center}
+\begin{table}
+ \begin{tabular}{|c|c|c|c|} 
+ \hline
+ Filling method & LSTM & SARIMA & MLP \\
+ \hline \hline
+ Linear interpolation & 0 & 0 & 0 \\
+ Placeholder & 4.01 & 4.11 & 0 \\
+ \hline
+ \end{tabular}
+ \caption{\textit{Comparison between different models and filling methods using RMSE value.}}
+ \label{table:RMSE}
+\end{table}
+\end{center}
+
+
+The final model used for forecasting is defined as a linear combination of MLP and SARIMA, as follow:
+\\
+\begin{center}
+  $\alpha * MLP + (1 - \alpha) * SARIMA$
+\end{center}
+where $\alpha$ is the parameter value that minimizes the RMSE (Root Mean Square Error).
+
+
