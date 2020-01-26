@@ -3,10 +3,7 @@ package main;
 import java.io.*;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Scanner;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -15,11 +12,11 @@ import static main.Season.SEASON_LENGTH;
 
 public class VotePicker {
 
-    private static final String FILE_BASE_PATH = "src/main/resources/info_";
+    private static final String FILE_BASE_PATH = "resources/info_";
     private static final String FILE_EXTENSION = ".txt";
     private static final String VOTE_BASE_URL = "https://fantapiu3.com/fantacalcio-storico-voti-gazzetta-sport-";
     private static final String VOTE_PAGE_EXTENSION = ".php";
-    private static final String NO_VOTE = "S.V.";
+    private static final List<String> NO_VOTE = Arrays.asList("S.V.", "-");
     private final List<Player> allPlayers = new ArrayList<>();
 
 
@@ -103,20 +100,22 @@ public class VotePicker {
                         final String v = this.getTdContent(br.readLine());
 
                         if (!role.isEmpty()) {//empty role is for coaches
-                            Player p = new Player(playerName, team, role);
-                            int dayInt = Integer.parseInt(day) + season.getSeasonIndex() * SEASON_LENGTH;
-                            double vDouble = v.equals(NO_VOTE) ? Player.DEFAULT_VOTE :
-                                    Double.parseDouble(v.replace(',', '.'));
-                            double fvDouble = fv.equals(NO_VOTE) ? Player.DEFAULT_VOTE :
-                                    Double.parseDouble(fv.replace(',', '.'));
-                            Consumer<Player> updateVotes = player -> {
-                                player.addVote(dayInt, vDouble);
-                                player.addFantaVote(dayInt, fvDouble);
-                            };
-                            players.stream().filter(p::equals).findFirst().ifPresentOrElse(updateVotes, () -> {
-                                updateVotes.accept(p);
-                                players.add(p);
-                            });
+
+                                Player p = new Player(playerName, team, role);
+                                int dayInt = Integer.parseInt(day) + season.getSeasonIndex() * SEASON_LENGTH;
+                                double vDouble = NO_VOTE.contains(v) ? Player.DEFAULT_VOTE :
+                                        Double.parseDouble(v.replace(',', '.'));
+                                double fvDouble = NO_VOTE.contains(v) ? Player.DEFAULT_VOTE :
+                                        Double.parseDouble(fv.replace(',', '.'));
+                                Consumer<Player> updateVotes = player -> {
+                                    player.addVote(dayInt, vDouble);
+                                    player.addFantaVote(dayInt, fvDouble);
+                                };
+                                players.stream().filter(p::equals).findFirst().ifPresentOrElse(updateVotes, () -> {
+                                    updateVotes.accept(p);
+                                    players.add(p);
+                                });
+
                         }
                     }
                 }

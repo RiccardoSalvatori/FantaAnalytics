@@ -4,6 +4,9 @@ import java.util.EnumSet;
 import java.util.List;
 
 enum Season {
+    //SEASON_1("2013-2014", 0),
+    //SEASON_2("2014-2015", 1),
+    //SEASON_3("2015-2016", 2),
     SEASON_1("2016-2017", 0),
     SEASON_2("2017-2018", 1),
     SEASON_3("2018-2019", 2);
