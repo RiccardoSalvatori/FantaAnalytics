@@ -1,5 +1,7 @@
 \chapter {Analysis on players data}
 
+The previous phases of data cleaning resulted in a dataset of 917 players with 114 votes each.
+
 Analysis are performed on different abstraction levels.
 
 At the beginning, high-level evaluations are made to discover stats on number of played matches (mean, min, max etc.); analysis on number of played matches are reported in figure \ref{fig:countMatch}.
@@ -24,7 +26,7 @@ Similarly, a fine grained analysis has been made by grouping players per role, a
 
 The task goal is discovering, if present, seasonality on players' votes.
 \\
-In order to achieve such a target, Pearson Correlation Index has been us, for single player and for role both.
+In order to achieve such a target, Pearson Correlation Index has been used, for single player and for role both.
 \\
 Empirical tests show that no relevant seasonality can be detected.
 \\
@@ -37,6 +39,38 @@ Figure \ref{fig:playereg} reports data on an example player.
 \end{figure}
 
 \section{Normality test}
+
+Normalty test were made on both votes and fantavotes to determine if the two datasets could be modeled by a normal distribution.
+qq-plot and histograms of votes showed a correlation with the normal distribution for almost all players  (Figure \ref{fig:hist_votes} and Figure \ref{fig:qqplot_votes})
+The same can't be said for the fantavotes dataset (Figure \ref{fig:hist_fantavotes} and Figure \ref{fig:qqplot_fantavotes})
+
+\begin{figure}[H]
+  \includegraphics[scale=0.5]{images/dzeko_normality_test_voti_barchart.png}
+   \caption{\textit{'Votes' histogram for ''Edin Dzeko''.}}
+  \label{fig:hist_votes}
+\end{figure}
+
+\begin{figure}[H]
+  \includegraphics[scale=0.5]{images/dzeko_normality_test_voti_qqplot.png}
+   \caption{\textit{'Votes' qqplot for ''Edin Dzeko''.}}
+  \label{fig:qqplot_votes}
+\end{figure}
+
+\begin{figure}[H]
+  \includegraphics[scale=0.5]{images/dzeko_normality_test_fantavoti_barchart.png}
+   \caption{\textit{'Fantavotes' histogram for ''Edin Dzeko''.}}
+  \label{fig:hist_fantavotes}
+\end{figure}
+
+\begin{figure}[H]
+  \includegraphics[scale=0.5]{images/dzeko_normality_test_fantavoti_qqplot.png}
+   \caption{\textit{'Fantavotes' qqplot for ''Edin Dzeko''.}}
+  \label{fig:qqplot_fantavotes}
+\end{figure}
+
+
+
+
 
 
   
