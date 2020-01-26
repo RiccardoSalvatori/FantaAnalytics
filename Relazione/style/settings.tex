@@ -1,0 +1,51 @@
+\AtBeginDocument{%
+	\renewcommand{\contentsname}{Table of contents}
+	\renewcommand\tablename{Table}
+	\renewcommand\figurename{Figure}
+	\renewcommand{\lstlistingname}{List}
+	\renewcommand{\refname}{Ref.}
+}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{
+  frame=single,
+  captionpos=b,
+  language=Java,
+  aboveskip=3mm,
+  belowskip=3mm,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  tabsize=3
+}
+
+\makeatletter
+\def\cleardoublepage{
+	\clearpage\if@twoside \ifodd\c@page\else
+	\hbox{}
+	\thispagestyle{empty}
+	\newpage
+	\if@twocolumn\hbox{}\newpage\fi\fi\fi
+}
+
+\makeatother
+
+\setlength{\textwidth}{14cm}
+\setlength{\textheight}{21cm}
+\setlength{\footskip}{3cm}
+
+\setlength{\hoffset}{0pt}
+\setlength{\voffset}{0pt}
+
+\setlength{\oddsidemargin}{1cm}
+\setlength{\evensidemargin}{1cm}

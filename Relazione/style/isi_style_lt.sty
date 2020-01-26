@@ -1,0 +1,176 @@
+\NeedsTeXFormat{LaTeX2e}
+
+\ProvidesPackage{deistesi}
+
+\RequirePackage{ifthen}
+\RequirePackage{multicol}
+
+%%%%%%%
+ \newif\ifpdf
+ \ifx\pdfoutput\undefined
+ \pdffalse % we are not running PDFLaTeX
+ \else
+ \pdfoutput=1 % we are running PDFLaTeX
+ \pdftrue
+ \fi
+%%%%%%%
+ \ifpdf
+ \usepackage[pdftex]{graphicx}
+ \else
+ \usepackage{graphicx}
+ \fi
+%%%%%%%%%%%%%%%
+ \ifpdf
+ \DeclareGraphicsExtensions{.pdf, .jpg, .tif}
+ \else
+ \DeclareGraphicsExtensions{.eps, .jpg}
+ \fi
+%%%%%%%%%%%%%%%
+
+
+\newcommand{\@universita}{?}
+\newcommand{\@scuola}{?}
+\newcommand{\@campus}{?}
+\newcommand{\@corsodilaurea}{?}
+\newcommand{\@titolo}{?}
+\newcommand{\@materia}{?}
+\newcommand{\@annoaccademico}{?}
+\newcommand{\@relatore}{?}
+\newcommand{\@correlatoreA}{?}
+\newcommand{\@correlatoreB}{?}
+
+\newcommand{\@laureando}{?}
+\newcommand{\@parolechiave}{?}
+\newcommand{\@dedica}{?}
+\newcommand{\@sessione}{?}
+
+\newcommand{\universita}[1]{%
+  \renewcommand{\@universita}{\uppercase{#1}}}
+\newcommand{\campus}[1]{%
+  \renewcommand{\@campus}{\uppercase{#1}}}
+\newcommand{\scuola}[1]{%
+  \renewcommand{\@scuola}{#1}}
+\newcommand{\corsodilaurea}[1]{%
+  \renewcommand{\@corsodilaurea}{#1}}
+\newcommand{\materia}[1]{%
+  \renewcommand{\@materia}{\uppercase{#1}}}
+\newcommand{\titolo}[1]{%
+  \renewcommand{\@titolo}{\uppercase{#1}}}
+\newcommand{\annoaccademico}[1]{%
+  \renewcommand{\@annoaccademico}{#1}}
+
+\newcommand{\relatore}[2][Prof.]{%
+  \renewcommand{\@relatore}{#1 \uppercase{#2}}}
+
+\newcommand{\correlatoreA}[2][Dott.]{%
+  \renewcommand{\@correlatoreA}{#1  \uppercase{#2}}}
+\newcommand{\correlatoreB}[2][Dott.]{%
+\renewcommand{\@correlatoreB}{#1  \uppercase{#2}}}
+
+\newcommand{\laureando}[1]{%
+  \renewcommand{\@laureando}{\uppercase{#1}}}
+\newcommand{\parolechiave}[5]{%
+  \renewcommand{\@parolechiave}{#1\\ \medskip #2\\ \medskip #3\\ \medskip #4\\ \medskip #5}}
+\newcommand{\dedica}[1]{%
+  \renewcommand{\@dedica}{#1}}
+\newcommand{\sessione}[1]{%
+   \renewcommand{\@sessione}{#1}}
+
+\newcommand{\clearemptydoublepage}{\newpage{\pagestyle{empty}%
+  \cleardoublepage}}
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %                                   %
+    %  Formattazione dell'intestazione  %
+    %  della tesi                       %
+    %                                   %
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\renewcommand\maketitle{
+
+\begin{titlepage}{
+
+\fontfamily{ptm} \selectfont
+\begin{center}
+
+\begin{large}
+\uppercase{\@universita}\\
+\uppercase{\@campus}
+\end{large}\\
+
+\rule{14cm}{.4pt}\\\smallskip
+
+\begin{large}
+\@scuola\\
+\@corsodilaurea\\
+
+\vfill
+
+{
+\setlength{\baselineskip}{1.5\baselineskip}
+\begin{LARGE}
+\@titolo
+\end{LARGE}\\
+}
+
+\vfill
+
+\begin{normalsize}
+\emph{Elaborato in}
+\end{normalsize}\\
+\@materia
+
+\vfill
+
+
+
+
+%\begin{normalsize}
+%\emph{Relatore}
+%\end{normalsize}\\
+
+
+\medskip
+
+
+
+
+
+
+\begin{normalsize}
+\emph{Presentata da}
+\end{normalsize}\\
+\@laureando
+
+
+
+\rule{14cm}{.4pt}\\\smallskip
+
+
+Anno Accademico \@annoaccademico
+
+\end{large}
+\end{center}
+}
+  
+\vspace*{17ex}
+  
+\vfill
+
+\clearemptydoublepage
+  
+\ifthenelse{\equal{\@dedica}{?}}{}{
+  \pagestyle{empty}
+  \vspace*{10ex}
+  \begin{large}
+  \begin{flushright}
+    \@dedica
+  \end{flushright}
+  \end{large}
+  \vfill
+  \clearemptydoublepage
+}
+\end{titlepage}
+
+}
+\endinput

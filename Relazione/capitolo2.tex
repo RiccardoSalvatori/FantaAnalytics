@@ -1,0 +1,24 @@
+\chapter {Data preprocessing}
+
+\section{Filling missing values}
+
+The main issue is to put a vote on non played matches for each player.
+\\
+Two approaches have been implemented to achieve this goal, as follow:
+\begin{itemize}
+\item \textbf{Linear interpolation}: missing values are interpolated using the existing ones; by increasing the cardinality of missing values, this method obviously loses effectiveness but, on the other hand, missing values tend to reflect self trend for each player.  
+\item \textbf{Constant placeholder}: a fixed value is set for each missing vote 
+\\
+$placeholder = minVote - 1$
+\\
+No assumption on filled vote confidency can be made since the value is indipendent from player itself.
+\end{itemize}
+
+Chosen a method, all three dataset are modified, and no missing vote is left.
+
+\section{Translation}
+
+Votes are translated coherently in order to yield them in a positive range.
+\\
+This is useful e.g. when applying log transform operations. 
+
