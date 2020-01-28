@@ -1,17 +1,15 @@
 \chapter {Forecast}
 
 The forecasting has been implemented in three differents ways: SARIMA , MLP and LSTM.
-We have chosen to work on a smaller subset of data to speed up the comparison phase between the models.
-The dataset used in forecasting evaluation is composed in fact by the players present in all three seasons and with a number of matches played greater then 100.
-The result is a 25 players dataset. 
-Each player's fantavotes has been divided into train set and test set (70\% - 30\%).
-The performances are compared in table \ref{table:RMSE} using \textit{Root Mean Squared Error} (RMSE) as common metric.
+A subset of dataset has been used on forecast; this choise is due to great time required to create and train the models.
+Indeed, the dataset is filtered on players that played more than 100 matches in the considered range of three years, resulting on 25 selected.
+Fantavotes for each player have been divided into train and test sets (70\% - 30\% respectively).
+Performance are compared in table \ref{table:RMSE} using \textit{Root Mean Squared Error} (RMSE) as common metric.
 
 \section{SARIMA}
 
-Regarding SARIMA, \textit{auto-arima} function has been used to find the best parameters for the ARIMA model.
-An example of application of the sarima model is visible in Figure \ref{fig:sarima}
-
+Regarding SARIMA, \textit{auto-arima} function has been used to find the best parameters for ARIMA model.
+An example of application of SARIMA model is visible in Figure \ref{fig:sarima}
 
 \begin{figure}[H]
   \includegraphics[scale=0.5]{images/dzeko_sarima_fantavoti.png}
@@ -21,9 +19,9 @@ An example of application of the sarima model is visible in Figure \ref{fig:sari
 \end{figure}
 
 \section{MLP}
-The MLP model architecture includes 1 input layer with 12 nodes, 1 hidden layer with 38 nodes and 1 output layers with 1 node. The activation function is \textit{relu}.
-The network has been trained with Adam optimizer and 150 epochs.
-An example of application of the MLP model is shown in Figure \ref{fig:mlp}
+The MLP model architecture includes 1 input layer with 12 nodes, 1 hidden layer with 38 nodes and 1 output layers with 1 node. The activation function is \textit{RELU}.
+The network has been trained with \textit{Adam} optimizer and 150 epochs.
+An example of application of the MLP model is visible in Figure \ref{fig:mlp}
 \begin{figure}[H]
   \includegraphics[scale=0.5]{images/dzeko_mlp_fantavoti.png}
    \centering  
@@ -53,7 +51,7 @@ The final model used for forecasting is defined as:
 \end{center}
 where:
 \begin{itemize}
-    \item \textbf{$\alpha$} is a weight between 0 and 1 and is the value that minimizes the RMSE in each player test set
+    \item \textbf{$\alpha$} is a weight in $[0; 1]$ that minimizes the RMSE 
     \item \textbf{LSTM} is the value predicted by LSTM model
     \item \textbf{SARIMA}  is the value predicted by SARIMA model 
 \end{itemize}
