@@ -618,17 +618,19 @@ forecast_player = "DZEKOE"
 
 # Seasonal - fit stepwise auto-ARIMA, returns an ARIMA model
 smodel = players_models_arima[forecast_player]['model']
+train = player_train_test[player_train_test.Player == forecast_player].Train.values[0]
+test = player_train_test[player_train_test.Player == forecast_player].Test.values[0]
 
 # Predictions of y values based on "model", aka fitted values
-yhat = smodel.predict_in_sample(start=1, end=len(train))
+yhat = smodel.predict_in_sample(start=0, end=len(train))
 forecasts, confint = smodel.predict(n_periods=len(test), return_conf_int=True)
-index_forecasts = pd.Series(range(df.index[-1]+1-len(test), df.index[-1]+1))
+index_forecasts = pd.Series(range(len(train),len(train)+len(test)))
 fitted_series = pd.Series(forecasts, index=index_forecasts)
 lower_series = pd.Series(confint[:, 0], index=index_forecasts)
 upper_series = pd.Series(confint[:, 1], index=index_forecasts)
 
 # Plot
-plt.plot(df.votes)
+plt.plot(np.concatenate((train, test)))
 plt.plot(yhat,color='brown')
 plt.plot(fitted_series, color='darkgreen')
 plt.fill_between(lower_series.index, 
