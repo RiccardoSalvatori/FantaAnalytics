@@ -40,7 +40,7 @@ for df in [raw_fantavoti, raw_voti, raw_bonus]:
 """Define utility functions and constants"""
 
 FILLING_METHOD=1    #linear interpolation 
-# FILLING_METHOD=2  # placheolder
+#FILLING_METHOD=2  # placheolder
 
 NAME_COLUMN = 0
 ROLE_COLUMN = 2 
@@ -467,6 +467,7 @@ def plotAllPlayerInfo(playerName):
   axs[1,2].set_title('Fantavoti')
 
 """Plot player data"""
+plt.rcParams.update({'figure.figsize':(12,6), 'figure.dpi':120})
 
 plotAllPlayerInfo("DZEKOE")
 
@@ -474,6 +475,7 @@ plotAllPlayerInfo("DZEKOE")
 
 import statsmodels.api as sm
 import pylab as py 
+plt.rcParams.update({'figure.figsize':(12,4), 'figure.dpi':120})
 
 def plotNormalityTest(values):
   plt.rcParams.update({'figure.figsize':(8,3), 'figure.dpi':120})
@@ -553,8 +555,6 @@ print("Dataset size {}".format(len(player_train_test)))
 Setup
 """
 
-
-
 from sqlalchemy import create_engine
 from statsmodels.graphics.tsaplots import plot_acf, plot_pacf
 import pyramid.arima as pm
@@ -568,7 +568,8 @@ plt.rcParams.update({'figure.figsize':(12,4), 'figure.dpi':120})
 def arima(player, dataset, train , test):
 
   _m = bestSeasonality(player, dataset)[0]
-
+  if(_m == 1): 
+    _m = 38
 
   # Seasonal - fit stepwise auto-ARIMA, returns an ARIMA model
   smodel = pm.auto_arima(train, start_p=1, start_q=1,
@@ -611,7 +612,99 @@ for i, row in player_train_test.iterrows():
 """Evaluate mean accuracy"""
 
 rmse = np.array( [ p['rmse'] for p in players_models_arima.values()])
-print(rmse.mean())
+print("SARIMA mean RSME {}".format(rmse.mean()))
+
+forecast_player = "DZEKOE"
+
+# Seasonal - fit stepwise auto-ARIMA, returns an ARIMA model
+smodel = players_models_arima[forecast_player]['model']
+
+# Predictions of y values based on "model", aka fitted values
+yhat = smodel.predict_in_sample(start=1, end=len(train))
+forecasts, confint = smodel.predict(n_periods=len(test), return_conf_int=True)
+index_forecasts = pd.Series(range(df.index[-1]+1-len(test), df.index[-1]+1))
+fitted_series = pd.Series(forecasts, index=index_forecasts)
+lower_series = pd.Series(confint[:, 0], index=index_forecasts)
+upper_series = pd.Series(confint[:, 1], index=index_forecasts)
+
+# Plot
+plt.plot(df.votes)
+plt.plot(yhat,color='brown')
+plt.plot(fitted_series, color='darkgreen')
+plt.fill_between(lower_series.index, 
+                 lower_series, 
+                 upper_series, 
+                 color='k', alpha=.15)
+
+plt.title("SARIMA - Final Forecast " + forecast_player)
+plt.show()
+
+
+
+"""##LSTM
+"""
+from keras.models import Sequential
+from keras.layers import Dense
+from keras.layers import LSTM
+from keras.layers import Flatten
+from keras.layers import GRU
+from keras.preprocessing.sequence import TimeseriesGenerator
+
+
+accuracies = {}
+players_models_lstm = {}
+n_input = 12; 
+n_features = 1
+for index, player in player_train_test.iterrows():
+  print("Training n.{} ".format(index+1)+ "on " + player.Player)
+  train = player.Train.to_numpy()
+  train = train.reshape((len(train),1))
+  train_generator =  TimeseriesGenerator(train, train, length=n_input, batch_size=1)
+  lstm_model = Sequential()
+  lstm_model.add(LSTM(32, activation='relu', input_shape=(n_input,n_features)))
+  lstm_model.add(Dense(1))
+  lstm_model.compile(optimizer='adam', loss='mse')
+  #lstm_model.summary()
+  lstm_model.fit_generator(train_generator,epochs=75)
+  test = player.Test.to_numpy()
+  test = test.reshape((len(test),1))
+  test_generator =  TimeseriesGenerator(test, test, length=n_input, batch_size=1)
+  predictions = lstm_model.predict_generator(test_generator).flatten()
+  accuracies[player.Player] = forecast_accuracy(test[n_input:].flatten(), predictions)
+  players_models_lstm[player.Player] = {
+      'model': lstm_model,
+      'rmse': accuracies[player.Player]['rmse']
+  }
+
+lstm_mean_rsme = np.mean([ players_models_lstm[x]['rmse'] for x in players_models_lstm ])
+print("LSTM mean RSME {}".format(lstm_mean_rsme))
+
+
+
+
+#print single player DEZEKO
+plt.rcParams.update({'figure.figsize':(12,3), 'figure.dpi':120})
+
+playerName = 'DZEKOE'
+
+plt.title("LSTM Final Forecast - " + playerName)
+player = player_train_test[player_train_test.Player==playerName]
+train = player.Train.values[0].to_numpy()
+train = train.reshape((len(train),1))
+train_generator =  TimeseriesGenerator(train, train, length=n_input, batch_size=1)
+test = player.Test.values[0].to_numpy()
+test = test.reshape((len(test),1))
+lstm_test = np.concatenate((train[-n_input:], test))
+
+test_generator =  TimeseriesGenerator(lstm_test, lstm_test, length=n_input, batch_size=1)
+predictions =  players_models_lstm[playerName]['model'].predict_generator(test_generator).flatten()
+train_pred =  players_models_lstm[playerName]['model'].predict_generator(train_generator)
+
+plt.plot([t for t in train] + [x for x in test], label='votes')
+plt.plot([None for x in range(n_input)] +[x for x in train_pred],
+          color='brown',label="train_prediction")
+plt.plot([None for t in range(len(train))] + [x for x in predictions], 
+          label="prediction", color='darkgreen')
 
 """## MLP
 
@@ -679,14 +772,14 @@ print(rmse.mean())
 
 """# FINAL FORECAST
 
-Merge MLP and SARIMA models.
+Merge LSTM and SARIMA models.
 Final forecast is 
-$$\alpha*MLP + (1-\alpha)*SARIMA$$
+$$\alpha*LSTM + (1-\alpha)*SARIMA$$
 
 Alpha parameter is chosen to minimize RMSE
 """
 
-def best_weigth(test, mlp_forecasts, arima_forecasts):
+def best_weigth(test, lstm_forecasts, arima_forecasts):
   """
   Find weight (w) that minimize error in w*mlp_forecasts + (a-w)*arima_forecasts
   """
@@ -694,12 +787,12 @@ def best_weigth(test, mlp_forecasts, arima_forecasts):
   for i in range(0, 100):
     alpha = i / 100
     beta = 1 - alpha
-    weighted_forecasts = (alpha * mlp_forecasts + beta * arima_forecasts)
+    weighted_forecasts = (alpha * lstm_forecasts + beta * arima_forecasts)
     meanError = ((test - weighted_forecasts)**2).mean() #mse
     errors.append(meanError)
   return np.array(errors).argmin() / 100
 
-"""Create dataframe that contains MLP model, SARIMA model and Weigth"""
+"""Create dataframe that contains LSTM model, SARIMA model and Weigth"""
 
 player_model = pd.DataFrame()
 
@@ -714,23 +807,54 @@ for i, row in player_train_test.iterrows():
   #arima foreacsts
   arima_forecasts = players_models_arima[player]['model'].predict(n_periods=len(test))
   
-  #mlp forecasts
-  mlp_test = pd.concat([train[-MLP_NPAST:], test], ignore_index=True)
-
-  test_generator = TimeseriesGenerator(mlp_test, mlp_test, length=MLP_NPAST, batch_size=MLP_BATCH_SIZE)
-  mlp_forecasts = players_models_mlp[player]['model'].predict_generator(test_generator)
-  mlp_forecasts = mlp_forecasts.flatten()
+   #lstm forecats
+  lstm_test = pd.concat([train[-12:], test], ignore_index=True)
+  test_r = lstm_test.to_numpy().reshape((len(lstm_test),1))
+  test_generator =  TimeseriesGenerator(test_r, test_r, length=n_input, batch_size=1)
+  lstm_forecast =  players_models_lstm[player]['model'].predict_generator(test_generator).flatten()
   
-  alpha = best_weigth(test , mlp_forecasts, arima_forecasts)
-  weighted_forecasts = (alpha * mlp_forecasts + (1-alpha) * arima_forecasts)
+  alpha = best_weigth(test , lstm_forecast, arima_forecasts)
+  weighted_forecasts = (alpha * lstm_forecast + (1-alpha) * arima_forecasts)
 
   rmse_list.append(forecast_accuracy(test, weighted_forecasts)['rmse'])
   
   player_model =player_model.append({"Player": player,
                        "Arima": players_models_arima[player]['model'],
-                       "MLP": players_models_mlp[player]['model'],
+                       "Lstm": players_models_lstm[player]['model'],
                        "Alpha": alpha}, ignore_index=True)
 
 rmse = np.array(rmse_list)
-print(rmse.mean())
+print("SARIMA+LSTM mean RSME {}".format(rmse.mean()))
+
+
+player = "DZEKOE"
+test = player_train_test[player_train_test.Player == player]['Test'].values[0]
+test.index = range(0,len(test))
+
+train = player_train_test[player_train_test.Player == player]['Train'].values[0]
+train.index = range(0,len(train))
+
+#arima foreacsts
+arima_forecasts = players_models_arima[player]['model'].predict(n_periods=len(test))
+  
+#lstm forecasts
+lstm_test = pd.concat([train[-12:], test], ignore_index=True)
+test_r = lstm_test.to_numpy().reshape((len(lstm_test),1))
+test_generator =  TimeseriesGenerator(test_r, test_r, length=n_input, batch_size=1)
+lstm_forecast =  players_models_lstm[player]['model'].predict_generator(test_generator).flatten()
+
+#weighted forcast
+alpha = player_model[player_model.Player == player]['Alpha'].values[0]
+weighted_forecasts = (alpha * lstm_forecast + (1-alpha) * arima_forecasts)
+
+plt.plot(test, label = "test",alpha=0.6)
+
+plt.plot(lstm_forecast, label = "LSTM",alpha=0.3)
+plt.plot(arima_forecasts, label = "SARIMA", alpha=0.3)
+plt.plot(weighted_forecasts, label = "FINAL")
+
+plt.title("SARIMA+LSTM Final Forecast " + player)
+plt.legend(loc=1)
+plt.show()
+print(player_model[player_model.Player == player]['Alpha'])
 
