@@ -31,8 +31,5 @@ Chosen a method, all three dataset are modified, and no missing vote is left.
 \end{figure}
 
 \section{Translation}
-
-Votes are translated coherently in order to yield them in a positive range.
-\\
-This is useful e.g. when applying log transform operations. 
+Since votes can be negative we decided to coherently translate them up in order to have all positive values; this was necessary, for example, to eventually apply log transform operations. 
 

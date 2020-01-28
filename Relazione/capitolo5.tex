@@ -1,0 +1,7 @@
+\chapter {Conclusions}
+We made an in-depth analysis of football players performances by studying the dataset of votes and fantavotes from the past 3 seasons of 'Serie A'. First we found out that only a subset of players (from a total of almost 1000) could be used for our purpose because some of them didn't played any matches or played so few that they were not statistically relevant. The remaining players also had some missing values that were filled using linear interpolation or with a constant placeholder.
+
+Then we made some high level analaysis on the dataset looking for patterns on data or general informations for the forecast phase. Using Pearson Correlation Coefficient we showed that players don't have a relevant seasonality component but in the other hand, votes are modeled pretty weel with a normal distribution unlike the fantavotes dataset that doesn't seem to have the same behaviour.
+
+In the end we tried to forecast player's fantavotes using three different models: SARIMA,MLP and LSTM. We didn't reach really high accuracies probably due to the complexity of the task and the lack of releveant patterns in the dataset. The best we could get is a 1.89 average RMSE using a linear combination of SARIMA and LSTM models.
+

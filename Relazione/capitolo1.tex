@@ -6,17 +6,17 @@ In order to create the dataset, we exploited an existing page crawler realized f
 \\
 Firstly, we made code refactoring on such project so we could start from a well laid out hard core.
 \\
-Then, we started by improving the application because the existing code would retrieve votes just for one season; we extended the retrival to more season, in particular we used 3 season but that's not a constraint since the program is parametric on number of seasons. 
-This parameter has been set to 3 since we evaluated that football market is very dynamic and just few players keep playing in ''Serie A" for years;
+Then, we started by improving the application because the existing code would retrieve votes just for one season; we extended the retrival to more seasons, in particular we used 3 seasons but that's not a constraint since the program is parametric on this number. 
+This parameter has been set to 3 since we evaluated that football market is very dynamic and just few players keep playing in "Serie A" for years;
 some trials have been made and 3 resulted a good compromise.
 \\
-In the end, votes were saved on external file using CSV standard format; two files are created respectively for votes and fantavotes.
+In the end, votes were saved on external file using CSV standard format; two files were created respectively for votes and fantavotes.
 \\
 A third dataset storing bonuses is created too from the existing two by a simple difference $fantavote - vote$.
 
 \section{Data cleaning}  
 
-Few checks have been made on categorical attributes in order to fix wrong values (e.g. ''OKONKWOO" resulting on playing in not existing role).
+Few checks have been made on categorical attributes in order to fix wrong values (e.g. ''OKONKWOO" resulted  playing in not existing role).
 \\
-Then, all players that did not play at least one match are dropped since no analysis can be performed with no vote at all.
-\\   
+Then, all players that did not play at least one match were dropped since no analysis can be performed with no vote at all.
+  

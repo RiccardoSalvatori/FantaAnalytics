@@ -1,7 +1,7 @@
 \chapter {Forecast}
 
 The forecasting has been implemented in three differents ways: SARIMA , MLP and LSTM.
-A subset of dataset has been used on forecast; this choise is due to great time required to create and train the models.
+A subset of dataset has been used on forecast.This choice was made to avoid working on too many interpolated data; this also allowed us to reduce the training time for the forecasting models, particularly LSTM and MLP,
 Indeed, the dataset is filtered on players that played more than 100 matches in the considered range of three years, resulting on 25 selected.
 Fantavotes for each player have been divided into train and test sets (70\% - 30\% respectively).
 Performance are compared in table \ref{table:RMSE} using \textit{Root Mean Squared Error} (RMSE) as common metric.
@@ -44,6 +44,7 @@ An example of application of the LSTM model is shown in Figure \ref{fig:mlp}
 \section{Models combination}
 
 In order to improve accuracy  on predictions, two type of models: statistic (SARIMA) and neural (LSTM)  were ensembled to come up with an hybrid version.
+
 The final model used for forecasting is defined as:
 \\
 \begin{center}
@@ -65,9 +66,7 @@ where:
 \end{figure}
 
 
-
-
-\begin{table}
+\begin{table}[H]
  \begin{tabular}{|c|c|c|c|c|} 
  \hline
  Filling method & SARIMA+LSTM & SARIMA & MLP & LSTM \\
